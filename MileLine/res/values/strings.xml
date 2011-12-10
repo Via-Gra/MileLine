@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MileLineActivity!</string>
+    <string name="app_name">MileLine</string>
+    <string name="about">About</string>
+    <string name="about_info">MileLine 1.0  \n created by VIA-GRA Software \n 24.11.2011</string>
+    <string name="options">Options</string>
+    <string name="addSemestr">Přidat semestr</string>
+    <string name="addSubject">Přidat předmět</string>
+    <string name="dead_stones">Dead Stones:</string>
+
+</resources>
