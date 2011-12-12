@@ -9,5 +9,6 @@
     <string name="addSemestr">Přidat semestr</string>
     <string name="addSubject">Přidat předmět</string>
     <string name="dead_stones">Dead Stones:</string>
+    <string name="refreshButt">Refresh</string>
 
 </resources>

@@ -23,21 +23,17 @@ public final class R {
     }
     public static final class id {
         public static final int aboutText=0x7f070000;
-        public static final int addSemestrButton=0x7f07000b;
-        public static final int addSubjectButton=0x7f07000c;
+        public static final int addSemestrButton=0x7f070007;
+        public static final int addSubjectButton=0x7f070008;
         public static final int backAbout=0x7f070002;
-        public static final int backButton=0x7f07000d;
-        public static final int deadLineText=0x7f070006;
+        public static final int backButton=0x7f070009;
+        public static final int deadLineText=0x7f070005;
         public static final int developerAbout=0x7f070001;
-        public static final int exitText=0x7f07000f;
+        public static final int exitText=0x7f07000b;
         public static final int imageView1=0x7f070003;
-        public static final int optionText=0x7f07000e;
-        public static final int optionsText=0x7f07000a;
-        public static final int tableLayout1=0x7f070004;
-        public static final int tableRow1=0x7f070005;
-        public static final int tableRow2=0x7f070007;
-        public static final int tableRow3=0x7f070008;
-        public static final int tableRow4=0x7f070009;
+        public static final int optionText=0x7f07000a;
+        public static final int optionsText=0x7f070006;
+        public static final int refreshButton=0x7f070004;
     }
     public static final class layout {
         public static final int about=0x7f030000;
@@ -56,5 +52,6 @@ public final class R {
         public static final int dead_stones=0x7f050007;
         public static final int hello=0x7f050000;
         public static final int options=0x7f050004;
+        public static final int refreshButt=0x7f050008;
     }
 }
