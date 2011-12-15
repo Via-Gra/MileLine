@@ -3,12 +3,10 @@ package jdopack;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 @PersistenceCapable(detachable="true")
 public class MileStone implements Serializable { /**
@@ -18,8 +16,8 @@ public class MileStone implements Serializable { /**
 
 
 	@PrimaryKey
-	@Persistent /*(valueStrategy = IdGeneratorStrategy.IDENTITY)*/
-	private Key id;
+	@Persistent (valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
 	
 	@Persistent
 	private String nazev;
@@ -33,8 +31,8 @@ public class MileStone implements Serializable { /**
 	@Persistent
 	private TimeStone timeStone;
 	
-	public MileStone(String timeStoneKod, int poradoveCisloMileStonu, String nazev, Date datum, String poznamka) {
-		this.id = creatKey(timeStoneKod, poradoveCisloMileStonu);
+	public MileStone(String timeStoneKod, String nazev, Date datum, String poznamka) {
+//		this.id = creatKey(timeStoneKod, poradoveCisloMileStonu);
 		this.nazev = nazev;
 		this.datum = datum;
 		this.poznamka = poznamka;
@@ -42,13 +40,13 @@ public class MileStone implements Serializable { /**
 
 
 	
-	public Key getId() {
+	public Long getId() {
 		return id;
 	}
 
 
 
-	public void setId(Key id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -102,9 +100,22 @@ public class MileStone implements Serializable { /**
 
 
 
-	public static Key creatKey(String timeStone, int id) {
-		return KeyFactory.createKey(MileStone.class.getSimpleName(), timeStone+id);
+	@Override
+	public String toString() {
+		return "MileStone [nazev=" + nazev + ", datum=" + datum + ", poznamka="
+				+ poznamka + ", timeStone=" + timeStone + "]";
 	}
+
+	
+	
+
+	
+	
+
+
+//	public static Key creatKey(String timeStone, int id) {
+//		return KeyFactory.createKey(MileStone.class.getSimpleName(), timeStone+id);
+//	}
 	
 	
 }

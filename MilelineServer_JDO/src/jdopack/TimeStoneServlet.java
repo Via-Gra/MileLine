@@ -1,11 +1,11 @@
 package jdopack;
 
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.ServletException;
@@ -13,66 +13,121 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.repackaged.org.json.JSONObject;
+import com.google.gson.Gson;
 
 @SuppressWarnings("serial")
 public class TimeStoneServlet extends HttpServlet {
-	
-	
-	//Pokud se jedna o GET 
+
+	// Pokud se jedna o GET
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+
 		PersistenceManager pm = null;
+		List<TimeStone> list=null;
+		Gson gson = new Gson();
 		try {
-			 pm = PMF.get().getPersistenceManager();//tohle mi dovoluje pracovat s databazi a pouzivat persistent - jedna se o singleton v souvoru PMF.java
-			 String kodStonu = req.getParameter("kod");//nactu za otaznikem hodnotu name - tj milelinecz.appspot.com/timeStone?kod=Radek vrati Radek
-			 Key k = TimeStone.creatKey (kodStonu);//vygeneruje klíè
-			 TimeStone nalezenyTimeStone = pm.getObjectById(TimeStone.class,k);//podle klíèe hledá v DB a vrátí to objekt tøídy TimeStone
-			 JSONObject obj = new JSONObject(nalezenyTimeStone);//Objekt vhodný pro pøenos ze serveru, jestli tomu dobøe rozumim
-			 // Na výstup napíše hlášku - dá se tak i debugovat trochu - je to pak vidìt v tom prográmku .jar - tj napíše to JSON objekt a pak i MileStone toho nalezenýho TimeStonu - vlastnì teda jen jeho název
-			 resp.getWriter().println(obj.toString() + ", " + nalezenyTimeStone.getMileStony().get(0).getNazev());
-		}finally {
+			pm = PMF.get().getPersistenceManager();// tohle mi dovoluje pracovat
+													// s databazi a pouzivat
+													// persistent - jedna se o
+													// singleton v souvoru
+													// PMF.java
+			String kodStonu = req.getParameter("kod");// nactu za otaznikem
+														// hodnotu name - tj
+														// milelinecz.appspot.com/timeStone?kod=Radek
+														// vrati Radek
+
+			if (kodStonu.equals("ALL")) {
+				String query = "select from " + TimeStone.class.getName();
+				list = (List<TimeStone>) pm.newQuery(query).execute();
+				
+				resp.getWriter().append(gson.toJson(list));
+				
+//				for (TimeStone obj : list) {
+//					resp.getWriter().append(gson.toJson(obj));
+//				}
+				
+				resp.getWriter().flush();
+				resp.getWriter().close();
+			} else {
+//				Long.parseLong(kodStonu);
+//				Key k = TimeStone.creatKey(kodStonu);// vygeneruje klï¿½ï¿½
+				TimeStone nalezenyTimeStone = pm.getObjectById(TimeStone.class,
+						Long.parseLong(kodStonu));// podle klï¿½ï¿½e hledï¿½ v DB a vrï¿½tï¿½ to objekt tï¿½ï¿½dy
+							// TimeStone
+//				JSONObject obj = new JSONObject(nalezenyTimeStone);// Objekt
+//																	// vhodnï¿½
+//																	// pro
+//																	// pï¿½enos ze
+//																	// serveru,
+//																	// jestli
+//																	// tomu
+//																	// dobï¿½e
+//																	// rozumim
+				// Na vï¿½stup napï¿½e hlï¿½ku - dï¿½ se tak i debugovat trochu - je to
+				// pak vidï¿½t v tom progrï¿½mku .jar - tj napï¿½e to JSON objekt a
+				// pak i MileStone toho nalezenï¿½ho TimeStonu - vlastnï¿½ teda jen
+				// jeho nï¿½zev
+				resp.getWriter().append(gson.toJson(nalezenyTimeStone));
+				resp.getWriter().flush();
+				resp.getWriter().close();
+			}
+		} finally {
 			pm.close();
 		}
 	}
-	
-	//Pokud se jedna o POST 
+
+	// Pokud se jedna o POST
 	@Override
-		protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-				throws ServletException, IOException {
-			//resp.setContentType("text/plain");
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// resp.setContentType("text/plain");
 		PersistenceManager pm = null;
-		 try {
-			 pm = PMF.get().getPersistenceManager();//tohle mi dovoluje pracovat s databazi a pouzivat persistent - jedna se o singleton v souvoru PMF.java
-			 String nazevStonu = req.getParameter("name");//nactu za otaznikem hodnotu name - tj milelinecz.appspot.com/timeStone?name=Radek vrati Radek
-			 String kodStonu = req.getParameter("kod");
-			 TimeStone timeStone = new TimeStone(nazevStonu,kodStonu,Typ.PREDMET); // konstruktor, lze zmìnit, lze jich udìlat vic dle typu
-			
-			 // vytvoøení zkuševního data
-			 Date date = new Date ();
-			 DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-			 date = dfm.parse("2011-12-24 20:15:00 +0200");
-			 
-			 // Vytvoøení zkušebního Milestonu hned pøi tvorbì TimeStonu - jen ukázka, pak to tady nemá co dìlat..
-			 timeStone.addMileStone(new MileStone (timeStone.getNazev(),timeStone.getPocetMileStonu()+1,"Nic nedelani", date,"pohoda"));
-			 
-			 //Pokud jsou pøedány i kredity, tak je to settne - nejsou defaultní hodnota, tak bych to øešil takhle - nejsou v konstruktoru pøedávaný
-			 if (req.getParameter("kredity") != null) timeStone.setPocetKreditu(( Integer.parseInt(req.getParameter("kredity"))));	
-			 
-			 // to uloží timeStone - jeho hodnoty - tj i ArrayList s MileStonama, takže to uloží i ty
-			 pm.makePersistent(timeStone);
-			 
-			 // Na výstup napíše hlášku - dá se tak i debugovat trochu - je to pak vidìt v tom prográmku .jar
-			 resp.getWriter().println("Post proceed");
-		    } catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-		     pm.close();
-		    }
+		try {
+			pm = PMF.get().getPersistenceManager();// tohle mi dovoluje pracovat
+													// s databazi a pouzivat
+													// persistent - jedna se o
+													// singleton v souvoru
+													// PMF.java
+			String nazevStonu = req.getParameter("name");// nactu za otaznikem
+															// hodnotu name - tj
+															// milelinecz.appspot.com/timeStone?name=Radek
+															// vrati Radek
+			String kodStonu = req.getParameter("kod");
+			TimeStone timeStone = new TimeStone(nazevStonu, kodStonu,
+					Typ.PREDMET); // konstruktor, lze zmï¿½nit, lze jich udï¿½lat
+									// vic dle typu
+
+			// vytvoï¿½enï¿½ zkuï¿½evnï¿½ho data
+			Date date = new Date();
+			DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+			date = dfm.parse("2011-12-24 20:15:00 +0200");
+
+			// Vytvoï¿½enï¿½ zkuï¿½ebnï¿½ho Milestonu hned pï¿½i tvorbï¿½ TimeStonu - jen
+			// ukï¿½zka, pak to tady nemï¿½ co dï¿½lat..
+			timeStone.addMileStone(new MileStone(timeStone.getNazev(), "Nic nedelani", date,
+					"pohoda"));
+
+			// Pokud jsou pï¿½edï¿½ny i kredity, tak je to settne - nejsou defaultnï¿½
+			// hodnota, tak bych to ï¿½eï¿½il takhle - nejsou v konstruktoru
+			// pï¿½edï¿½vanï¿½
+			if (req.getParameter("kredity") != null)
+				timeStone.setPocetKreditu((Integer.parseInt(req
+						.getParameter("kredity"))));
+
+			// to uloï¿½ï¿½ timeStone - jeho hodnoty - tj i ArrayList s MileStonama,
+			// takï¿½e to uloï¿½ï¿½ i ty
+			pm.makePersistent(timeStone);
+
+			// Na vï¿½stup napï¿½e hlï¿½ku - dï¿½ se tak i debugovat trochu - je to pak
+			// vidï¿½t v tom progrï¿½mku .jar
+			resp.getWriter().println("Post proceed");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			pm.close();
+		}
 
 	}
 }

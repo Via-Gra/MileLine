@@ -3,13 +3,12 @@ package jdopack;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 //import org.hibernate.validator.constraints.NotBlank;
 
@@ -26,8 +25,8 @@ public class TimeStone implements Serializable {
 
 	// @NotBlank
 	@PrimaryKey
-	@Persistent /*(valueStrategy = IdGeneratorStrategy.IDENTITY)*/
-	private Key idStonu;
+	@Persistent (valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long idStonu;
 
 	/** street and number */
 	@Persistent
@@ -50,26 +49,26 @@ public class TimeStone implements Serializable {
 	private int pocetMileStonu;
 	
 	@Persistent(mappedBy = "timeStone")
-	private ArrayList<MileStone> mileStony;
+	private List<MileStone> mileStony;
 
 
 	public TimeStone(String nazevStonu, String kodStonu, Typ typ) {
 		this.nazev = nazevStonu;
 		this.kod = kodStonu;
-		this.idStonu = creatKey(kodStonu);
+//		this.idStonu = creatKey(kodStonu);
 		this.typ = typ;
 		mileStony = new ArrayList<MileStone>();
 	}
 
 	
 
-	public Key getIdStonu() {
+	public Long getIdStonu() {
 		return idStonu;
 	}
 
 
 
-	public void setIdStonu(Key idStonu) {
+	public void setIdStonu(Long idStonu) {
 		this.idStonu = idStonu;
 	}
 
@@ -172,7 +171,7 @@ public class TimeStone implements Serializable {
 
 
 
-	public ArrayList<MileStone> getMileStony() {
+	public List<MileStone> getMileStony() {
 		return mileStony;
 	}
 
@@ -188,8 +187,19 @@ public class TimeStone implements Serializable {
 	}
 
 
-	public static Key creatKey(String kodStonu) {
-		return KeyFactory.createKey(TimeStone.class.getSimpleName(), kodStonu);
+
+	@Override
+	public String toString() {
+		return "TimeStone [idStonu=" + idStonu + ", nazev=" + nazev
+				+ ", pocetKreditu=" + pocetKreditu + ", kod=" + kod
+				+ ", zacatek=" + zacatek + ", konec=" + konec + ", sudost="
+				+ sudost + ", typ=" + typ + ", pocetMileStonu="
+				+ pocetMileStonu + ", mileStony=" + mileStony + "]";
 	}
+	
+	
+//	public static Key creatKey(String kodStonu) {
+//		return KeyFactory.createKey(TimeStone.class.getSimpleName(), kodStonu);
+//	}
 
 }
